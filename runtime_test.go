@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"github.com/dotcloud/docker/rcli"
 	"io"
 	"io/ioutil"
 	"os"
@@ -16,7 +17,6 @@ const testLayerPath string = "/var/lib/docker/docker-ut.tar"
 const unitTestImageName string = "docker-ut"
 
 var unitTestStoreBase string
-var srv *Server
 
 func nuke(runtime *Runtime) error {
 	var wg sync.WaitGroup
@@ -48,6 +48,8 @@ func layerArchive(tarfile string) (io.Reader, error) {
 }
 
 func init() {
+	NO_MEMORY_LIMIT = os.Getenv("NO_MEMORY_LIMIT") == "1"
+
 	// Hack to run sys init during unit testing
 	if SelfPath() == "/sbin/init" {
 		SysInit()
@@ -77,7 +79,7 @@ func init() {
 		runtime: runtime,
 	}
 	// Retrieve the Image
-	if err := srv.CmdPull(os.Stdin, os.Stdout, unitTestImageName); err != nil {
+	if err := srv.CmdPull(os.Stdin, rcli.NewDockerLocalConn(os.Stdout), unitTestImageName); err != nil {
 		panic(err)
 	}
 }
@@ -314,7 +316,7 @@ func TestRestore(t *testing.T) {
 	// Simulate a crash/manual quit of dockerd: process dies, states stays 'Running'
 	cStdin, _ := container2.StdinPipe()
 	cStdin.Close()
-	if err := container2.WaitTimeout(time.Second); err != nil {
+	if err := container2.WaitTimeout(2 * time.Second); err != nil {
 		t.Fatal(err)
 	}
 	container2.State.Running = true
@@ -358,4 +360,5 @@ func TestRestore(t *testing.T) {
 	if err := container3.Run(); err != nil {
 		t.Fatal(err)
 	}
+	container2.State.Running = false
 }

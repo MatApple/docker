@@ -5,13 +5,21 @@ import (
 	"github.com/MatApple/docker"
 	"github.com/MatApple/docker/rcli"
 	"github.com/MatApple/docker/term"
+	"fmt"
+	"github.com/dotcloud/docker"
+	"github.com/dotcloud/docker/rcli"
+	"github.com/dotcloud/docker/term"
 	"io"
 	"log"
 	"os"
 	"os/signal"
+	"syscall"
 )
 
-var GIT_COMMIT string
+var (
+	GIT_COMMIT      string
+	NO_MEMORY_LIMIT string
+)
 
 func main() {
 	if docker.SelfPath() == "/sbin/init" {
@@ -23,6 +31,7 @@ func main() {
 	flDaemon := flag.Bool("d", false, "Daemon mode")
 	flDebug := flag.Bool("D", false, "Debug mode")
 	bridgeName := flag.String("b", "", "Attach containers to a pre-existing network bridge")
+	pidfile := flag.String("p", "/var/run/docker.pid", "File containing process PID")
 	flag.Parse()
 	if *bridgeName != "" {
 		docker.NetworkBridgeIface = *bridgeName
@@ -33,12 +42,16 @@ func main() {
 		os.Setenv("DEBUG", "1")
 	}
 	docker.GIT_COMMIT = GIT_COMMIT
+	docker.NO_MEMORY_LIMIT = NO_MEMORY_LIMIT == "1"
 	if *flDaemon {
 		if flag.NArg() != 0 {
 			flag.Usage()
 			return
 		}
-		if err := daemon(); err != nil {
+		if NO_MEMORY_LIMIT == "1" {
+			log.Printf("WARNING: This version of docker has been compiled without memory limit support.")
+		}
+		if err := daemon(*pidfile); err != nil {
 			log.Fatal(err)
 		}
 	} else {
@@ -48,7 +61,43 @@ func main() {
 	}
 }
 
-func daemon() error {
+func createPidFile(pidfile string) error {
+	if _, err := os.Stat(pidfile); err == nil {
+		return fmt.Errorf("pid file found, ensure docker is not running or delete %s", pidfile)
+	}
+
+	file, err := os.Create(pidfile)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	_, err = fmt.Fprintf(file, "%d", os.Getpid())
+	return err
+}
+
+func removePidFile(pidfile string) {
+	if err := os.Remove(pidfile); err != nil {
+		log.Printf("Error removing %s: %s", pidfile, err)
+	}
+}
+
+func daemon(pidfile string) error {
+	if err := createPidFile(pidfile); err != nil {
+		log.Fatal(err)
+	}
+	defer removePidFile(pidfile)
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill, os.Signal(syscall.SIGTERM))
+	go func() {
+		sig := <-c
+		log.Printf("Received signal '%v', exiting\n", sig)
+		removePidFile(pidfile)
+		os.Exit(0)
+	}()
+
 	service, err := docker.NewServer()
 	if err != nil {
 		return err
@@ -57,29 +106,21 @@ func daemon() error {
 }
 
 func runCommand(args []string) error {
-	var oldState *term.State
-	var err error
-	if term.IsTerminal(int(os.Stdin.Fd())) && os.Getenv("NORAW") == "" {
-		oldState, err = term.MakeRaw(int(os.Stdin.Fd()))
-		if err != nil {
-			return err
-		}
-		defer term.Restore(int(os.Stdin.Fd()), oldState)
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt)
-		go func() {
-			for _ = range c {
-				term.Restore(int(os.Stdin.Fd()), oldState)
-				log.Printf("\nSIGINT received\n")
-				os.Exit(0)
-			}
-		}()
-	}
 	// FIXME: we want to use unix sockets here, but net.UnixConn doesn't expose
 	// CloseWrite(), which we need to cleanly signal that stdin is closed without
 	// closing the connection.
 	// See http://code.google.com/p/go/issues/detail?id=3345
 	if conn, err := rcli.Call("tcp", "127.0.0.1:4242", args...); err == nil {
+		options := conn.GetOptions()
+		if options.RawTerminal &&
+			term.IsTerminal(int(os.Stdin.Fd())) &&
+			os.Getenv("NORAW") == "" {
+			if oldState, err := rcli.SetRawTerminal(); err != nil {
+				return err
+			} else {
+				defer rcli.RestoreTerminal(oldState)
+			}
+		}
 		receiveStdout := docker.Go(func() error {
 			_, err := io.Copy(os.Stdout, conn)
 			return err
@@ -100,16 +141,7 @@ func runCommand(args []string) error {
 			}
 		}
 	} else {
-		service, err := docker.NewServer()
-		if err != nil {
-			return err
-		}
-		if err := rcli.LocalCall(service, os.Stdin, os.Stdout, args...); err != nil {
-			return err
-		}
-	}
-	if oldState != nil {
-		term.Restore(int(os.Stdin.Fd()), oldState)
+		return fmt.Errorf("Can't connect to docker daemon. Is 'docker -d' running on this host?")
 	}
 	return nil
 }
