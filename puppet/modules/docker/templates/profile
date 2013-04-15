@@ -24,7 +24,7 @@ fi
 export GOPATH=/opt/go
 export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 
-docker=/opt/go/src/github.com/dotcloud/docker
+docker=/opt/go/src/github.com/MatApple/docker
 if [ -d $docker ]; then
   cd $docker
 fi

@@ -201,7 +201,7 @@ Note
 ----
 
 We also keep the documentation in this repository. The website documentation is generated using sphinx using these sources.
-Please find it under docs/sources/ and read more about it https://github.com/dotcloud/docker/master/docs/README.md
+Please find it under docs/sources/ and read more about it https://github.com/MatApple/docker/master/docs/README.md
 
 Please feel free to fix / update the documentation and send us pull requests. More tutorials are also welcome.
 
@@ -217,13 +217,13 @@ sudo apt-get -y install lxc wget bsdtar curl golang git
 export GOPATH=~/go/
 export PATH=$GOPATH/bin:$PATH
 
-mkdir -p $GOPATH/src/github.com/dotcloud
-cd $GOPATH/src/github.com/dotcloud
+mkdir -p $GOPATH/src/github.com/MatApple
+cd $GOPATH/src/github.com/MatApple
 git clone git@github.com:dotcloud/docker.git
 cd docker
 
-go get -v github.com/dotcloud/docker/...
-go install -v github.com/dotcloud/docker/...
+go get -v github.com/MatApple/docker/...
+go install -v github.com/MatApple/docker/...
 ```
 
 Then run the docker daemon,

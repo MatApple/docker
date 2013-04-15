@@ -1,4 +1,4 @@
-DOCKER_PACKAGE := github.com/dotcloud/docker
+DOCKER_PACKAGE := github.com/MatApple/docker
 
 BUILD_DIR := $(CURDIR)/.gopath
 
