@@ -26,16 +26,17 @@ Vagrant::VERSION >= "1.1.0" and Vagrant.configure("1") do |config|
 end
 
 Vagrant::VERSION >= "1.1.0" and Vagrant.configure("2") do |config|
-  config.vm.provider :aws do |aws|
+  config.vm.provider :aws do |aws, override|
     config.vm.box = "dummy"
     config.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
-    aws.access_key_id = ENV["AWS_ACCESS_KEY_ID"]
-    aws.secret_access_key = ENV["AWS_SECRET_ACCESS_KEY"]
-    aws.keypair_name = ENV["AWS_KEYPAIR_NAME"]
-    aws.ssh_private_key_path = ENV["AWS_SSH_PRIVKEY"]
+    aws.access_key_id = "AKIAI7CYRNSO56TF3SBQ"
+    aws.secret_access_key = "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"
+    aws.keypair_name = "protobox"
+	override.ssh.username = "ubuntu"
+    override.ssh.private_key_path = "/Users/matappelman/aws/protobox.pem"
     aws.region = "us-east-1"
-    aws.ami = "ami-ae9806c7"
-    aws.ssh_username = "ubuntu"
+    aws.ami = "ami-3fec7956"
+	aws.security_groups = ["protobox_host"]
     aws.instance_type = "t1.micro"
   end
 
