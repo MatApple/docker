@@ -54,7 +54,7 @@ class Docker(object):
 
 	def runCommand(self,cmd):
 		print "command: ",cmd
-		p = Popen([cmd], stdout=PIPE, stderr=PIPE, bufsize=1, close_fds=ON_POSIX)
+		p = Popen([cmd], stdout=PIPE, stderr=PIPE, bufsize=1, close_fds=ON_POSIX, shell=True)
 		try:
 			self.q.put(str(p.output()))
 		except:
