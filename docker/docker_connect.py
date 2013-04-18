@@ -44,7 +44,7 @@ class Docker(object):
 		
 	def StdIn(self):
 	    while True:
-	        d = source.recv(32384)
+	        d = self.client.recv(32384)
 	        if d == '':
 	            self.cb()
 	            break
