@@ -12,7 +12,7 @@ import os
 import unittest
 import sys
 import sys
-from subprocess import PIPE, Popen
+from subprocess import PIPE, Popen, CalledProcessError
 from threading  import Thread
 import zerorpc
 
@@ -53,7 +53,12 @@ class Docker(object):
 	        self.runCommand(d)
 
 	def runCommand(self,cmd):
-		p = Popen([cmd], stdout=PIPE, stderr=PIPE, bufsize=1, close_fds=ON_POSIX)
+		print "command: ",cmd
+		try:
+			p = Popen([cmd], stdout=PIPE, stderr=PIPE, bufsize=1, close_fds=ON_POSIX)
+		except:
+			self.q.put(str(p.output()))
+			
 		t = Thread(target=enqueue_output, args=(p.stdout, p.stderr, self.queue))
 		t.daemon = True # thread dies with the program
 		t.start()
