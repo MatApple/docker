@@ -15,6 +15,7 @@ import sys
 import simplejson
 import binascii
 import pickle
+import zerorpc
 
 def bin(x):
     if x==0:
@@ -25,7 +26,7 @@ def bin(x):
 
 def docker_connect():
 	HOST, PORT = "ec2-23-20-84-18.compute-1.amazonaws.com", 7000
-	data = "ps -a"
+	data = "docker ps\n"
 	
 	# Create a socket (SOCK_STREAM means a TCP socket)
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -44,5 +45,12 @@ def docker_connect():
 	return
 
 
+def docker_connect_proxy():
+	c = zerorpc.Client()
+	c.connect("tcp://ec2-23-20-84-18.compute-1.amazonaws.com:7000")
+	for item in c.proxy("ps"):
+		print item
+
+
 if __name__ == '__main__':
-	docker_connect()
+	docker_connect_proxy()
