@@ -26,7 +26,7 @@ class DockerConnect(object):
 
 
 try:
-	s = zerorpc.Server(StreamingRPC())
+	s = zerorpc.Server(DockerConnect())
 	s.bind("tcp://0.0.0.0:7000")
 	s.run()
 except KeyboardInterrupt:
