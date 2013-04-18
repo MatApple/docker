@@ -23,7 +23,7 @@ try:
 	  sys.stderr.write("[ERROR] %s\n" % msg[1])
 	  sys.exit(2)
  
-	sock.send("cd ; cd docker-master; sudo ./docker ps")
+	sock.send("ls")
  
 	data = sock.recv(1024)
 	string = ""
