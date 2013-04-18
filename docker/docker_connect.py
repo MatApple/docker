@@ -29,7 +29,7 @@ ON_POSIX = 'posix' in sys.builtin_module_names
 def closed_callback():
     print "called back"
 
-def enqueue_output(self, out, err, queue):
+def enqueue_output(out, err, queue):
 	for line in iter(out.readline, b''):
 		queue.put(line)
 	for line in iter(err.readline, b''):
