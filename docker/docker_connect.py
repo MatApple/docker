@@ -53,7 +53,7 @@ class Docker(object):
 	        self.runCommand(d)
 
 	def runCommand(self,cmd):
-		p = Popen([cmd], stdout=PIPE, stderr=PIPE bufsize=1, close_fds=ON_POSIX)
+		p = Popen([cmd], stdout=PIPE, stderr=PIPE, bufsize=1, close_fds=ON_POSIX)
 		t = Thread(target=enqueue_output, args=(p.stdout, p.stderr, self.queue))
 		t.daemon = True # thread dies with the program
 		t.start()
