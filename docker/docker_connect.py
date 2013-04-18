@@ -14,6 +14,7 @@ import sys
 import sys
 from subprocess import PIPE, Popen
 from threading  import Thread
+import zerorpc
 #import gevent
 #import eventlet
 
