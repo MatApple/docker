@@ -17,10 +17,21 @@ import zerorpc
 
 class DockerConnect(object):
 	
-	def proxy(self,data): 
-		c = zerorpc.Client()
-		c.connect("tcp://127.0.0.1:4242")
-		return c
+	def proxy(self,data):
+		# Create a socket (SOCK_STREAM means a TCP socket)
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		
+		# Connect to server and send data
+		sock.connect(("127.0.0.1", 4242))
+		sock.send(data)
+		
+		# Receive data from the server and shut down
+		received = sock.recv(1024)
+		sock.close()
+		
+		print("Sent:     %s" % data)
+		print("Received: %s" % received)
+		return received
 
 
 
