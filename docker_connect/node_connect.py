@@ -26,7 +26,7 @@ def bin(x):
 
 def docker_connect():
 	HOST, PORT = "ec2-23-20-84-18.compute-1.amazonaws.com", 7000
-	data = "docker ps\n"
+	data = "\n"
 	
 	# Create a socket (SOCK_STREAM means a TCP socket)
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -36,7 +36,7 @@ def docker_connect():
 	sock.send(data)
 	
 	# Receive data from the server and shut down
-	received = sock.recv(1024)
+	received = sock.recv(32384)
 	sock.close()
 	
 	print("Sent:     %s" % data)
@@ -48,8 +48,8 @@ def docker_connect():
 def docker_connect_proxy():
 	c = zerorpc.Client()
 	c.connect("tcp://ec2-23-20-84-18.compute-1.amazonaws.com:7000")
-	print c.proxy("ps")
+	print c.proxy("docker ps\n")
 
 
 if __name__ == '__main__':
-	docker_connect_proxy()
+	docker_connect()

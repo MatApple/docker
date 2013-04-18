@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const DOCKER_PATH = "/home/creack/dotcloud/docker/docker/docker"
+const DOCKER_PATH = " sudo ./docker"
 
 func runDaemon() (*exec.Cmd, error) {
 	cmd := exec.Command(DOCKER_PATH, "-d")
