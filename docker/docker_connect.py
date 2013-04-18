@@ -39,7 +39,7 @@ def enqueue_output(out, err, queue):
 
 class Docker(object):
 	def __init__(self, client, cb):
-		self.q=Queue
+		self.q=Queue()
 		self.client=client
 		self.cb=cb
 		self.StdIn()
