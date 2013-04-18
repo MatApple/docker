@@ -29,8 +29,10 @@ ON_POSIX = 'posix' in sys.builtin_module_names
 def closed_callback():
     print "called back"
 
-def enqueue_output(self, out, queue):
+def enqueue_output(self, out, err, queue):
 	for line in iter(out.readline, b''):
+		queue.put(line)
+	for line in iter(err.readline, b''):
 		queue.put(line)
 	queue.put("closed connection")
 	out.close()
@@ -51,8 +53,8 @@ class Docker(object):
 	        self.runCommand(d)
 
 	def runCommand(self,cmd):
-		p = Popen([cmd], stdout=PIPE, bufsize=1, close_fds=ON_POSIX)
-		t = Thread(target=enqueue_output, args=(p.stdout, self.queue))
+		p = Popen([cmd], stdout=PIPE, stderr=PIPE bufsize=1, close_fds=ON_POSIX)
+		t = Thread(target=enqueue_output, args=(p.stdout, p.stderr, self.queue))
 		t.daemon = True # thread dies with the program
 		t.start()
 		self.q.put("running cmd: "+str(cmd))
