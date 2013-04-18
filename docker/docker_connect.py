@@ -51,5 +51,5 @@ class Docker(object):
 		self.subscribe()
 
 s = zerorpc.Server(Docker())
-s.bind("tcp://0.0.0.0:4243")
+s.bind("tcp://"+str(socket.gethostname())+":5000")
 s.run()
