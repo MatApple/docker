@@ -48,8 +48,7 @@ def docker_connect():
 def docker_connect_proxy():
 	c = zerorpc.Client()
 	c.connect("tcp://ec2-23-20-84-18.compute-1.amazonaws.com:7000")
-	for item in c.proxy("ps"):
-		print item
+	print c.proxy("ps")
 
 
 if __name__ == '__main__':
