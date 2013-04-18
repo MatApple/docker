@@ -25,7 +25,7 @@ def bin(x):
 
 def docker_connect():
 	HOST, PORT = "ec2-23-20-84-18.compute-1.amazonaws.com", 7000
-	data = "docker ps\n"
+	data = "ps -a"
 	
 	# Create a socket (SOCK_STREAM means a TCP socket)
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

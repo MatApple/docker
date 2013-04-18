@@ -45,8 +45,8 @@ try:
 	    client, addr = listener.accept()
 	    server = eventlet.connect(('127.0.0.1', 4242))
 	    # two unidirectional forwarders make a bidirectional one
-	    eventlet.spawn_n(callback, client, server, closed_callback)
-	    eventlet.spawn_n(forward, server, client)
+	    eventlet.spawn_n(forward, client, server, closed_callback)
+	    eventlet.spawn_n(callback, server, client)
 except KeyboardInterrupt:
 	sys.exit(0)
 
