@@ -15,8 +15,8 @@ import sys
 from subprocess import PIPE, Popen
 from threading  import Thread
 import zerorpc
-#import gevent
-#import eventlet
+
+import eventlet
 
 try:
     from Queue import Queue, Empty
@@ -24,6 +24,74 @@ except ImportError:
     from queue import Queue, Empty  # python 3.x
 
 ON_POSIX = 'posix' in sys.builtin_module_names
+
+
+def closed_callback():
+    print "called back"
+
+def enqueue_output(self, out, queue):
+	for line in iter(out.readline, b''):
+		queue.put(line)
+	queue.put("closed connection")
+	out.close()
+
+class Docker(object):
+	def __init__(self, client, cb):
+		self.q=Queue
+		self.client=client
+		self.cb=cb
+		self.StdIn()
+		
+	def StdIn(self):
+	    while True:
+	        d = source.recv(32384)
+	        if d == '':
+	            self.cb()
+	            break
+	        self.runCommand(d)
+
+	def runCommand(self,cmd):
+		p = Popen([cmd], stdout=PIPE, bufsize=1, close_fds=ON_POSIX)
+		t = Thread(target=enqueue_output, args=(p.stdout, self.queue))
+		t.daemon = True # thread dies with the program
+		t.start()
+		self.q.put("running cmd: "+str(cmd))
+		self.stdOut()
+	
+	def stdOut(self):
+		while True:
+			try:
+				msg = self.q.get_nowait() # or q.get(timeout=.1)
+			except Empty:
+				eventlet.sleep(0.1)
+			else:
+				self.client.sendall(msg)
+				if msg == "closed connection":
+					break
+			
+
+
+listener = eventlet.listen(('0.0.0.0', 7000))
+print "listening!"
+try:
+	while True:
+		client, addr = listener.accept()
+		eventlet.spawn_n(Docker, client, closed_callback)
+except KeyboardInterrupt:
+	sys.exit(0)
+
+
+
+
+
+
+
+
+
+
+
+
+"""
 
 def enqueue_output(self, out, queue):
 	for line in iter(out.readline, b''):
@@ -53,3 +121,4 @@ class Docker(object):
 s = zerorpc.Server(Docker())
 s.bind("tcp://"+str(socket.gethostname())+":5000")
 s.run()
+"""
