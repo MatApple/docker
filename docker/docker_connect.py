@@ -30,8 +30,7 @@ def closed_callback():
 def enqueue_output(out, queue, proc):
 	while proc.poll() is None:
 		for line in iter(out.readline, ""):
-			if len(line) > 0:
-				queue.put(line)
+			queue.put(line)
 		eventlet.sleep(0.1)
 	out.close()
 	queue.put("closed connection")
@@ -74,11 +73,7 @@ class Docker(object):
 			except:
 				eventlet.sleep(0.1)
 			else:
-				try:
-					self.client.sendall(msg)
-				except:
-					if not self.killed: 
-						self.kill_and_close()
+				self.client.sendall(msg)
 				if msg == "closed connection" and self.q.empty():
 					break
 				if msg == "closed connection" and self.killed:
@@ -87,6 +82,7 @@ class Docker(object):
 
 	
 	def kill_and_close(self):
+		print "Killing remote client connection"
 		if self.proc: 
 			self.proc.kill()
 		self.killed=True
