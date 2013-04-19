@@ -30,15 +30,12 @@ def closed_callback():
     print "called back"
 
 def enqueue_output(out, queue, proc):
-	while True:
+	while proc.poll() is None:
 		for line in iter(out.readline, ""):
 			if line=="":
 				break
-			if not len(line):
-				break
 			queue.put(line)
-		if proc.poll():
-			break
+		eventlet.sleep(0.1)
 	queue.put("closed connection")
 	err.close()
 	out.close()
@@ -61,8 +58,6 @@ class Docker(object):
 	def runCommand(self,cmd):
 		print "command: ",cmd
 		p = Popen([cmd], stdout=PIPE, stderr=STDOUT, shell=True, close_fds=ON_POSIX)
-		
-			
 		t = Thread(target=enqueue_output, args=(p.stdout, self.q, p))
 		t.daemon = True # thread dies with the program
 		t.start()
