@@ -10,7 +10,10 @@ import os
 import sys
 import socket
 
-def connect(msg):
+HOST= "ec2-23-22-117-177.compute-1.amazonaws.com"
+PORT= 4243
+
+def talk(msg):
 	try:
 		try:
 			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,7 +22,7 @@ def connect(msg):
 			sys.exit(1)
 		
 		try:
-			sock.connect(("ec2-23-20-84-18.compute-1.amazonaws.com", 7000))
+			sock.connect((HOST, PORT))
 		except socket.error, msg:
 			sys.stderr.write("[ERROR] %s\n" % msg[1])
 			sys.exit(2)
@@ -33,20 +36,21 @@ def connect(msg):
 			data = sock.recv(1024)
 			if not data or "closed connection" in data:
 				break
-			
-		print "closing socket"
+		
 		sock.close()
 		print "socket closed"
 	except KeyboardInterrupt:
 		pass
  	return
 
+
+
 if __name__=="__main__":
 	while 1:
 		msg = ''
 		try:
 			msg = raw_input('> ')
-			connect(msg)
+			talk(msg)
 		except:
 			raise
 	
