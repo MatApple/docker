@@ -35,6 +35,7 @@ def enqueue_output(out, err, queue):
 	for line in iter(err.readline, b''):
 		queue.put(line)
 	queue.put("closed connection")
+	err.close()
 	out.close()
 
 class Docker(object):
@@ -54,7 +55,7 @@ class Docker(object):
 
 	def runCommand(self,cmd):
 		print "command: ",cmd
-		p = Popen([cmd], stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True, shell=True)
+		p = Popen([cmd], stdout=PIPE, stderr=PIPE, shell=True)
 		try:
 			self.q.put(str(p.output()))
 		except:
