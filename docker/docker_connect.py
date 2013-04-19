@@ -12,7 +12,7 @@ import os
 import unittest
 import sys
 import sys
-from subprocess import PIPE, Popen, CalledProcessError
+from subprocess import PIPE, STDOUT, Popen, CalledProcessError
 from threading  import Thread
 import zerorpc
 
@@ -29,15 +29,12 @@ ON_POSIX = 'posix' in sys.builtin_module_names
 def closed_callback():
     print "called back"
 
-def enqueue_output(out, err, queue, proc):
+def enqueue_output(out, queue, proc):
 	while True:
 		for line in iter(out.readline, ""):
 			if line=="":
 				break
-			queue.put(line)
-			print line
-		for line in iter(err.readline, ""):
-			if line=="":
+			if not len(line):
 				break
 			queue.put(line)
 		if proc.poll():
@@ -63,13 +60,10 @@ class Docker(object):
 
 	def runCommand(self,cmd):
 		print "command: ",cmd
-		p = Popen([cmd], stdout=PIPE, stderr=PIPE, shell=True, close_fds=ON_POSIX)
-		try:
-			self.q.put(str(p.output()))
-		except:
-			pass
+		p = Popen([cmd], stdout=PIPE, stderr=STDOUT, shell=True, close_fds=ON_POSIX)
+		
 			
-		t = Thread(target=enqueue_output, args=(p.stdout, p.stderr, self.q, p))
+		t = Thread(target=enqueue_output, args=(p.stdout, self.q, p))
 		t.daemon = True # thread dies with the program
 		t.start()
 		self.stdOut()
