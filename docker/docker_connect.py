@@ -62,7 +62,7 @@ class Docker(object):
 		except:
 			pass
 			
-		t = Thread(target=enqueue_output, args=(p.stdout, p.stderr, p.stdin, elf.q))
+		t = Thread(target=enqueue_output, args=(p.stdout, p.stderr, p.stdin, self.q))
 		t.daemon = True # thread dies with the program
 		t.start()
 		self.q.put("running cmd: "+str(cmd))
