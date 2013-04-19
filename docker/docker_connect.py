@@ -64,11 +64,11 @@ class Docker(object):
 		while True:
 			try:
 				msg = self.q.get_nowait() # or q.get(timeout=.1)
-			except Empty:
+			except:
 				eventlet.sleep(0.1)
 			else:
 				self.client.sendall(msg)
-				if msg == "closed connection":
+				if msg == "closed connection" and self.q.empty():
 					break
 			
 
