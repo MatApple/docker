@@ -32,9 +32,13 @@ def closed_callback():
 def enqueue_output(out, err, queue, proc):
 	while True:
 		for line in iter(out.readline, ""):
+			if line=="":
+				break
 			queue.put(line)
 			print line
 		for line in iter(err.readline, ""):
+			if line=="":
+				break
 			queue.put(line)
 		if proc.poll():
 			break
