@@ -30,10 +30,17 @@ def closed_callback():
     print "called back"
 
 def enqueue_output(out, err, queue):
-	for line in iter(out.readline, b''):
-		queue.put(line)
-	for line in iter(err.readline, b''):
-		queue.put(line)
+	lines=False
+	while True:
+		for line in iter(out.readline, b''):
+			queue.put(line)
+			lines=True
+		for line in iter(err.readline, b''):
+			queue.put(line)
+			lines=True
+		if not lines:
+			break
+		lines=False
 	queue.put("closed connection")
 	out.close()
 

@@ -13,27 +13,30 @@ import socket
 def connect(msg):
 	try:
 		try:
-		  sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		except socket.error, msg:
-		  sys.stderr.write("[ERROR] %s\n" % msg[1])
-		  sys.exit(1)
-
+			sys.stderr.write("[ERROR] %s\n" % msg[1])
+			sys.exit(1)
+		
 		try:
-		  sock.connect(("ec2-23-20-84-18.compute-1.amazonaws.com", 7000))
+			sock.connect(("ec2-23-20-84-18.compute-1.amazonaws.com", 7000))
 		except socket.error, msg:
-		  sys.stderr.write("[ERROR] %s\n" % msg[1])
-		  sys.exit(2)
-
+			sys.stderr.write("[ERROR] %s\n" % msg[1])
+			sys.exit(2)
+		
 		sock.send(msg)
-
+		
 		data = sock.recv(1024)
-		string = ""
-		while len(data) > 0:
-		  print data
-		  if data=="":
-			break
-		  data = sock.recv(1024)
+		
+		while data:
+			print data
+			data = sock.recv(1024)
+			if not data or "closed connection" in data:
+				break
+			
+		print "closing socket"
 		sock.close()
+		print "socket closed"
 	except KeyboardInterrupt:
 		pass
  	return
