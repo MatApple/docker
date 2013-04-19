@@ -12,7 +12,7 @@ import os
 import unittest
 import sys
 import sys
-from subprocess import PIPE, Popen, CalledProcessError
+from subprocess import PIPE, STDOUT, Popen, CalledProcessError
 from threading  import Thread
 import zerorpc
 
@@ -29,13 +29,16 @@ ON_POSIX = 'posix' in sys.builtin_module_names
 def closed_callback():
     print "called back"
 
-def enqueue_output(out, err, queue):
-	for line in iter(out.readline, b''):
-		queue.put(line)
-	for line in iter(err.readline, b''):
-		queue.put(line)
+def enqueue_output(out, queue):
+	while True:
+		done=False
+		for line in iter(out.readline, b''):
+			queue.put(line)
+			if line=="":
+				done=True
+		if done==True:
+			break
 	queue.put("closed connection")
-	err.close()
 	out.close()
 
 class Docker(object):
@@ -55,13 +58,13 @@ class Docker(object):
 
 	def runCommand(self,cmd):
 		print "command: ",cmd
-		p = Popen([cmd], stdout=PIPE, stderr=PIPE, shell=True)
+		p = Popen([cmd], stdout=PIPE, stderr=STDOUT, cwd=)
 		try:
 			self.q.put(str(p.output()))
 		except:
 			pass
 			
-		t = Thread(target=enqueue_output, args=(p.stdout, p.stderr, self.q))
+		t = Thread(target=enqueue_output, args=(p.stdout, self.q))
 		t.daemon = True # thread dies with the program
 		t.start()
 		self.q.put("running cmd: "+str(cmd))
