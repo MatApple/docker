@@ -17,12 +17,12 @@ from threading  import Thread
 import zerorpc
 
 import eventlet
-
+"""
 try:
     from Queue import Queue, Empty
 except ImportError:
     from queue import Queue, Empty  # python 3.x
-
+"""
 ON_POSIX = 'posix' in sys.builtin_module_names
 
 
@@ -32,17 +32,14 @@ def closed_callback():
 def enqueue_output(out, queue, proc):
 	while proc.poll() is None:
 		for line in iter(out.readline, ""):
-			if line=="":
-				break
 			queue.put(line)
 		eventlet.sleep(0.1)
 	queue.put("closed connection")
-	err.close()
 	out.close()
 
 class Docker(object):
 	def __init__(self, client, cb):
-		self.q=Queue()
+		self.q=eventlet.queue.LightQueue()
 		self.client=client
 		self.cb=cb
 		self.StdIn()
