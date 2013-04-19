@@ -83,7 +83,7 @@ Installing on Ubuntu 12.04 and 12.10
 1. Install dependencies:
 
     ```bash
-    sudo apt-get install lxc wget bsdtar curl
+    sudo apt-get install lxc bsdtar
     sudo apt-get install linux-image-extra-`uname -r`
     ```
 
@@ -122,28 +122,41 @@ Some streamlined (but possibly outdated) installation paths' are available from 
 Usage examples
 ==============
 
-Running an interactive shell
-----------------------------
+First run the docker daemon
+---------------------------
+
+All the examples assume your machine is running the docker daemon. To run the docker daemon in the background, simply type:
 
 ```bash
-# Download a base image
-docker pull base
-
-# Run an interactive shell in the base image,
-# allocate a tty, attach stdin and stdout
-docker run -i -t base /bin/bash
+# On a production system you want this running in an init script
+sudo docker -d &
 ```
 
+Now you can run docker in client mode: all commands will be forwarded to the docker daemon, so the client can run from any account.
+
+```bash
+# Now you can run docker commands from any account.
+docker help
+```
+
+
+Throwaway shell in a base ubuntu image
+--------------------------------------
+
+```bash
+docker pull ubuntu:12.10
+
+# Run an interactive shell, allocate a tty, attach stdin and stdout
+# To detach the tty without exiting the shell, use the escape sequence Ctrl-p + Ctrl-q
+docker run -i -t ubuntu:12.10 /bin/bash
+```
 
 Starting a long-running worker process
 --------------------------------------
 
 ```bash
-# Run docker in daemon mode
-(docker -d || echo "Docker daemon already running") &
-
 # Start a very useful long-running process
-JOB=$(docker run -d base /bin/sh -c "while true; do echo Hello world; sleep 1; done")
+JOB=$(docker run -d ubuntu /bin/sh -c "while true; do echo Hello world; sleep 1; done")
 
 # Collect the output of the job so far
 docker logs $JOB
@@ -152,21 +165,27 @@ docker logs $JOB
 docker kill $JOB
 ```
 
-
-Listing all running containers
-------------------------------
+Running an irc bouncer
+----------------------
 
 ```bash
-docker ps
+BOUNCER_ID=$(docker run -d -p 6667 -u irc shykes/znc $USER $PASSWORD)
+echo "Configure your irc client to connect to port $(port $BOUNCER_ID 6667) of this machine"
 ```
 
+Running Redis
+-------------
+
+```bash
+REDIS_ID=$(docker run -d -p 6379 shykes/redis redis-server)
+echo "Configure your redis client to connect to port $(port $REDIS_ID 6379) of this machine"
+```
 
 Share your own image!
 ---------------------
 
 ```bash
-docker pull base
-CONTAINER=$(docker run -d base apt-get install -y curl)
+CONTAINER=$(docker run -d ubuntu:12.10 apt-get install -y curl)
 docker commit -m "Installed curl" $CONTAINER $USER/betterbase
 docker push $USER/betterbase
 ```

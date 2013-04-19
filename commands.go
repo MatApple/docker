@@ -18,7 +18,7 @@ import (
 	"unicode"
 )
 
-const VERSION = "0.1.4"
+const VERSION = "0.1.6"
 
 var (
 	GIT_COMMIT      string
@@ -472,7 +472,7 @@ func (srv *Server) CmdImport(stdin io.ReadCloser, stdout rcli.DockerConn, args .
 		}
 		archive = ProgressReader(resp.Body, int(resp.ContentLength), stdout)
 	}
-	img, err := srv.runtime.graph.Create(archive, nil, "Imported from "+src)
+	img, err := srv.runtime.graph.Create(archive, nil, "Imported from "+src, "")
 	if err != nil {
 		return err
 	}
@@ -720,6 +720,7 @@ func (srv *Server) CmdCommit(stdin io.ReadCloser, stdout io.Writer, args ...stri
 		"commit", "[OPTIONS] CONTAINER [REPOSITORY [TAG]]",
 		"Create a new image from a container's changes")
 	flComment := cmd.String("m", "", "Commit message")
+	flAuthor := cmd.String("author", "", "Author (eg. \"John Hannibal Smith <hannibal@a-team.com>\"")
 	if err := cmd.Parse(args); err != nil {
 		return nil
 	}
@@ -728,7 +729,7 @@ func (srv *Server) CmdCommit(stdin io.ReadCloser, stdout io.Writer, args ...stri
 		cmd.Usage()
 		return nil
 	}
-	img, err := srv.runtime.Commit(containerName, repository, tag, *flComment)
+	img, err := srv.runtime.Commit(containerName, repository, tag, *flComment, *flAuthor)
 	if err != nil {
 		return err
 	}

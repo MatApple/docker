@@ -83,12 +83,13 @@ func (graph *Graph) Get(name string) (*Image, error) {
 }
 
 // Create creates a new image and registers it in the graph.
-func (graph *Graph) Create(layerData Archive, container *Container, comment string) (*Image, error) {
+func (graph *Graph) Create(layerData Archive, container *Container, comment, author string) (*Image, error) {
 	img := &Image{
 		Id:            GenerateId(),
 		Comment:       comment,
 		Created:       time.Now(),
 		DockerVersion: VERSION,
+		Author:        author,
 	}
 	if container != nil {
 		img.Parent = container.Image
@@ -111,7 +112,7 @@ func (graph *Graph) Register(layerData Archive, img *Image) error {
 	if graph.Exists(img.Id) {
 		return fmt.Errorf("Image %s already exists", img.Id)
 	}
-	tmp, err := graph.Mktemp(img.Id)
+	tmp, err := graph.Mktemp("")
 	defer os.RemoveAll(tmp)
 	if err != nil {
 		return fmt.Errorf("Mktemp failed: %s", err)
