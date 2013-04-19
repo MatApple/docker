@@ -55,7 +55,8 @@ class Docker(object):
 				self.cb()
 				break
 			self.runCommand(d)
-		return
+
+
 
 	def runCommand(self,cmd):
 		print "command: ",cmd
@@ -64,7 +65,7 @@ class Docker(object):
 		self.thread.daemon=True
 		self.thread.start()
 		self.stdOut()
-		return
+
 	
 	def stdOut(self):
 		while True:
@@ -76,16 +77,18 @@ class Docker(object):
 				try:
 					self.client.sendall(msg)
 				except:
-					if not self.killed: self.kill_and_close()
+					if not self.killed: 
+						self.kill_and_close()
 				if msg == "closed connection" and self.q.empty():
 					break
 				if msg == "closed connection" and self.killed:
 					break
-		return
+
+
 	
 	def kill_and_close(self):
-		if self.proc: self.proc.kill()
-		self.killq.put("KILL")
+		if self.proc: 
+			self.proc.kill()
 		self.killed=True
 		return
 
