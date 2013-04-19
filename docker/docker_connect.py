@@ -58,7 +58,7 @@ class Docker(object):
 
 	def runCommand(self,cmd):
 		print "command: ",cmd
-		p = Popen([cmd], stdout=PIPE, stderr=STDOUT, cwd=)
+		p = Popen([cmd], stdout=PIPE, stderr=STDOUT, cwd=r"/home/ubuntu/docker-master")
 		try:
 			self.q.put(str(p.output()))
 		except:
