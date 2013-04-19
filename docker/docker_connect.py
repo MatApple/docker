@@ -30,8 +30,7 @@ def closed_callback():
     print "called back"
 
 def enqueue_output(out, err, queue, proc):
-	done=False
-	while not done:
+	while True:
 		for line in iter(out.readline, ""):
 			queue.put(line)
 			print line
