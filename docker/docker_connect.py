@@ -61,8 +61,6 @@ class Docker(object):
 	def StdIn(self):
 		while True:
 			d = self.client.recv(32384)
-			## listen for closed client connections and hit kill
-			if need_to_kill: self.kill_and_close()
 			if d == '':
 				self.cb()
 				break
