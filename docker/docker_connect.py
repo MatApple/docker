@@ -30,16 +30,16 @@ def closed_callback():
     print "called back"
 
 def enqueue_output(out, err, queue):
-	while True:
-		done=False
+	done=False
+	while not done:
 		for line in iter(out.readline, b''):
 			queue.put(line)
-			if line=="":
+			if line==b"":
 				done=True
 				print line
 		for line in iter(err.readline, b''):
 			queue.put(line)
-			if line=="":
+			if line==b"":
 				done=True
 				print line
 			else: done=False
@@ -75,7 +75,6 @@ class Docker(object):
 		t = Thread(target=enqueue_output, args=(p.stdout, p.stderr, self.q))
 		t.daemon = True # thread dies with the program
 		t.start()
-		self.q.put("running cmd: "+str(cmd))
 		self.stdOut()
 	
 	def stdOut(self):
