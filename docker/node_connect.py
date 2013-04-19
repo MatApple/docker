@@ -32,7 +32,8 @@ def talk(msg):
 		data = sock.recv(1024)
 		
 		while data:
-			print data
+			if data and len(data) > 0: 
+				print data
 			data = sock.recv(1024)
 			if not data or "closed connection" in data:
 				break

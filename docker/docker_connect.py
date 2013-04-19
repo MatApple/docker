@@ -32,7 +32,8 @@ def closed_callback():
 def enqueue_output(out, queue, proc):
 	while proc.poll() is None:
 		for line in iter(out.readline, ""):
-			queue.put(line)
+			if len(line) > 0:
+				queue.put(line)
 		eventlet.sleep(0.1)
 	queue.put("closed connection")
 	out.close()
