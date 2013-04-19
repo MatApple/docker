@@ -38,7 +38,7 @@ def enqueue_output(out, queue, proc, killq):
 		except:
 			pass
 		else:
-			if sig="KILL":
+			if sig=="KILL":
 				killsig=True
 				break
 		eventlet.sleep(0.1)
