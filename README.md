@@ -134,12 +134,6 @@ docker pull base
 docker run -i -t base /bin/bash
 ```
 
-Detaching from the interactive shell
-------------------------------------
-```
-# In order to detach without killing the shell, you can use the escape sequence Ctrl-p + Ctrl-q
-# Note: this works only in tty mode (run with -t option).
-```
 
 Starting a long-running worker process
 --------------------------------------
@@ -189,9 +183,7 @@ JOB=$(docker run -d -p 4444 base /bin/nc -l -p 4444)
 PORT=$(docker port $JOB 4444)
 
 # Connect to the public port via the host's public address
-# Please note that because of how routing works connecting to localhost or 127.0.0.1 $PORT will not work.
-IP=$(ifconfig eth0 | perl -n -e 'if (m/inet addr:([\d\.]+)/g) { print $1 }')
-echo hello world | nc $IP $PORT
+echo hello world | nc $(hostname) $PORT
 
 # Verify that the network connection worked
 echo "Daemon received: $(docker logs $JOB)"
@@ -209,7 +201,7 @@ Note
 ----
 
 We also keep the documentation in this repository. The website documentation is generated using sphinx using these sources.
-Please find it under docs/sources/ and read more about it https://github.com/MatApple/docker/master/docs/README.md
+Please find it under docs/sources/ and read more about it https://github.com/dotcloud/docker/master/docs/README.md
 
 Please feel free to fix / update the documentation and send us pull requests. More tutorials are also welcome.
 
@@ -225,13 +217,13 @@ sudo apt-get -y install lxc wget bsdtar curl golang git
 export GOPATH=~/go/
 export PATH=$GOPATH/bin:$PATH
 
-mkdir -p $GOPATH/src/github.com/MatApple
-cd $GOPATH/src/github.com/MatApple
+mkdir -p $GOPATH/src/github.com/dotcloud
+cd $GOPATH/src/github.com/dotcloud
 git clone git@github.com:dotcloud/docker.git
 cd docker
 
-go get -v github.com/MatApple/docker/...
-go install -v github.com/MatApple/docker/...
+go get -v github.com/dotcloud/docker/...
+go install -v github.com/dotcloud/docker/...
 ```
 
 Then run the docker daemon,

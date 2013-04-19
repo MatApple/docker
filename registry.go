@@ -3,7 +3,7 @@ package docker
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/MatApple/docker/auth"
+	"github.com/dotcloud/docker/auth"
 	"io"
 	"io/ioutil"
 	"net/http"

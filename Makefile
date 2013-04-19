@@ -1,4 +1,4 @@
-DOCKER_PACKAGE := github.com/MatApple/docker
+DOCKER_PACKAGE := github.com/dotcloud/docker
 
 BUILD_DIR := $(CURDIR)/.gopath
 
@@ -13,10 +13,7 @@ endif
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
 GIT_STATUS = $(shell test -n "`git status --porcelain`" && echo "+CHANGES")
 
-NO_MEMORY_LIMIT ?= 0
-export NO_MEMORY_LIMIT
-
-BUILD_OPTIONS = -ldflags "-X main.GIT_COMMIT $(GIT_COMMIT)$(GIT_STATUS) -X main.NO_MEMORY_LIMIT $(NO_MEMORY_LIMIT)"
+BUILD_OPTIONS = -ldflags "-X main.GIT_COMMIT $(GIT_COMMIT)$(GIT_STATUS)"
 
 SRC_DIR := $(GOPATH)/src
 

@@ -3,7 +3,7 @@ package docker
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/MatApple/docker/rcli"
+	"github.com/dotcloud/docker/rcli"
 	"github.com/kr/pty"
 	"io"
 	"io/ioutil"

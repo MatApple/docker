@@ -79,7 +79,7 @@ class docker {
     }
 
      exec { "build-docker" :
-        cwd  => "/opt/go/src/github.com/MatApple/docker",
+        cwd  => "/opt/go/src/github.com/dotcloud/docker",
         user => $vagrant_user,
         environment => "GOPATH=/opt/go",
         command => "/usr/local/go/bin/go get -v ./... && /usr/local/go/bin/go install ./docker",

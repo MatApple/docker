@@ -41,7 +41,6 @@ class Docker(object):
 	def __init__(self, client, cb):
 		self.q=eventlet.queue.LightQueue()
 		self.client=client
-		self.thread=None
 		self.proc=None
 		self.killed=False
 		self.cb=cb
@@ -60,9 +59,9 @@ class Docker(object):
 	def runCommand(self,cmd):
 		print "command: ",cmd
 		self.proc = Popen([cmd], stdout=PIPE, stderr=STDOUT, shell=True, close_fds=ON_POSIX)
-		self.thread = Thread(target=enqueue_output, args=(self.proc.stdout, self.q, self.proc))
-		self.thread.daemon=True
-		self.thread.start()
+		t = Thread(target=enqueue_output, args=(self.proc.stdout, self.q, self.proc))
+		t.daemon=True
+		t.start()
 		self.stdOut()
 
 	
@@ -73,7 +72,11 @@ class Docker(object):
 			except:
 				eventlet.sleep(0.1)
 			else:
-				self.client.sendall(msg)
+				try:
+					self.client.sendall(msg)
+				except:
+					if not self.killed: 
+						self.kill_and_close()
 				if msg == "closed connection" and self.q.empty():
 					break
 				if msg == "closed connection" and self.killed:

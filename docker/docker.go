@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"github.com/MatApple/docker"
-	"github.com/MatApple/docker/rcli"
-	"github.com/MatApple/docker/term"
+	"github.com/dotcloud/docker"
+	"github.com/dotcloud/docker/rcli"
+	"github.com/dotcloud/docker/term"
 	"fmt"
 	"io"
 	"log"
