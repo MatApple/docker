@@ -30,9 +30,9 @@ def closed_callback():
     print "called back"
 
 def enqueue_output(out, err, queue):
-	for line in iter(lambda: out.read(1024), ''):
+	for line in iter(out.readline, b''):
 		queue.put(line)
-	for line in iter(lambda: err.read(1024), ''):
+	for line in iter(err.readline, b''):
 		queue.put(line)
 	queue.put("closed connection")
 	out.close()
