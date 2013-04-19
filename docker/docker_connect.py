@@ -27,20 +27,11 @@ def closed_callback():
 
 
 
-def enqueue_output(out, queue, proc, killq):
-	killsig=False
-	while proc.poll() is None and not killsig:
+def enqueue_output(out, queue, proc):
+	while proc.poll() is None:
 		for line in iter(out.readline, ""):
 			if len(line) > 0:
 				queue.put(line)
-		try:
-			sig = killq.get_nowait() # or q.get(timeout=.1)
-		except:
-			pass
-		else:
-			if sig=="KILL":
-				killsig=True
-				break
 		eventlet.sleep(0.1)
 	out.close()
 	queue.put("closed connection")
@@ -50,7 +41,6 @@ def enqueue_output(out, queue, proc, killq):
 class Docker(object):
 	def __init__(self, client, cb):
 		self.q=eventlet.queue.LightQueue()
-		self.killq=eventlet.queue.LightQueue()
 		self.client=client
 		self.thread=None
 		self.proc=None
@@ -70,7 +60,8 @@ class Docker(object):
 	def runCommand(self,cmd):
 		print "command: ",cmd
 		self.proc = Popen([cmd], stdout=PIPE, stderr=STDOUT, shell=True, close_fds=ON_POSIX)
-		self.thread = Thread(target=enqueue_output, args=(self.proc.stdout, self.q, self.proc, self.killq))
+		self.thread = Thread(target=enqueue_output, args=(self.proc.stdout, self.q, self.proc))
+		self.thread.daemon=True
 		self.thread.start()
 		self.stdOut()
 		return
