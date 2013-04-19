@@ -29,7 +29,7 @@ def closed_callback():
 
 def enqueue_output(out, queue, proc, killq):
 	killsig=False
-	while proc.poll() is None and killsig=False:
+	while proc.poll() is None and not killsig:
 		for line in iter(out.readline, ""):
 			if len(line) > 0:
 				queue.put(line)
