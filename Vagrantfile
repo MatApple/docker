@@ -5,7 +5,7 @@ def v10(config)
   config.vm.box = "quantal64_3.5.0-25"
   config.vm.box_url = "http://get.docker.io/vbox/ubuntu/12.10/quantal64_3.5.0-25.box"
 
-  config.vm.share_folder "v-data", "/opt/go/src/github.com/dotcloud/docker", File.dirname(__FILE__)
+  config.vm.share_folder "v-data", "/opt/go/src/github.com/MatApple/docker", File.dirname(__FILE__)
 
   # Ensure puppet is installed on the instance
   config.vm.provision :shell, :inline => "apt-get -qq update; apt-get install -y puppet; sudo apt-get install linux-image-extra-`uname -r`;"

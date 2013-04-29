@@ -35,7 +35,7 @@ else is working on the same thing.
 ### Create issues...
 
 Any significant improvement should be documented as [a github
-issue](https://github.com/dotcloud/docker/issues) before anybody
+issue](https://github.com/MatApple/docker/issues) before anybody
 starts working on it.
 
 ### ...but check for existing issues first!

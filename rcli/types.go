@@ -10,7 +10,7 @@ package rcli
 import (
 	"flag"
 	"fmt"
-	"github.com/dotcloud/docker/term"
+	"github.com/MatApple/docker/term"
 	"io"
 	"log"
 	"net"

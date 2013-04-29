@@ -66,7 +66,7 @@ push:
 
 github-deploy: docs
 	rm -fr github-deploy
-	git clone ssh://git@github.com/dotcloud/docker github-deploy
+	git clone ssh://git@github.com/MatApple/docker github-deploy
 	cd github-deploy && git checkout -f gh-pages && git rm -r * && rsync -avH ../_build/html/ ./ && touch .nojekyll && echo "docker.io" > CNAME && git add * && git commit -m "Updating docs"
 
 $(VERSIONS):

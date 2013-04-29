@@ -4,7 +4,7 @@ Priority: extra
 Homepage: https://github.com/MatApple/docker
 Maintainer: Daniel Mizyrycki <daniel@dotcloud.com>
 Build-Depends: debhelper (>= 8.0.0), pkg-config, git, golang, libsqlite3-dev
-Vcs-Git: http://github.com/dotcloud/docker.git
+Vcs-Git: http://github.com/MatApple/docker.git
 Standards-Version: 3.9.3
 
 Package: lxc-docker

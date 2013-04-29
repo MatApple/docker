@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Daniel Mizyrycki <daniel@dotcloud.com>
 Build-Depends: debhelper (>= 9),autotools-dev,golang
 Standards-Version: 3.9.3
-Homepage: http://github.com/dotcloud/docker
+Homepage: http://github.com/MatApple/docker
 
 Package: lxc-docker
 Architecture: linux-any

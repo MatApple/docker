@@ -1,7 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: docker
 Upstream-Contact: DotCloud Inc <opensource@dotcloud.com>
-Source: http://github.com/dotcloud/docker
+Source: http://github.com/MatApple/docker
 
 Files: *
 Copyright: 2012, DotCloud Inc <opensource@dotcloud.com>

@@ -3,7 +3,7 @@ package docker
 import (
 	"container/list"
 	"fmt"
-	"github.com/dotcloud/docker/auth"
+	"github.com/MatApple/docker/auth"
 	"io"
 	"io/ioutil"
 	"os"

@@ -15,7 +15,7 @@ Building Dependencies: debhelper, autotools-dev and golang
 Assuming you have a wheezy system up and running
 
 # Download a fresh copy of the docker project
-git clone https://github.com/dotcloud/docker.git
+git clone https://github.com/MatApple/docker.git
 cd docker
 
 # Get building dependencies

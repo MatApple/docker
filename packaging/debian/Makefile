@@ -1,6 +1,6 @@
 PKG_NAME=lxc-docker
 DOCKER_VERSION=$(shell head -1 changelog | awk 'match($$0, /\(.+\)/) {print substr($$0, RSTART+1, RLENGTH-4)}')
-GITHUB_PATH=github.com/dotcloud/docker
+GITHUB_PATH=github.com/MatApple/docker
 SOURCE_PKG=$(PKG_NAME)_$(DOCKER_VERSION).orig.tar.gz
 BUILD_SRC=${CURDIR}/../../build_src
 

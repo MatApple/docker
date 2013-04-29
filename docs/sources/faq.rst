@@ -11,7 +11,7 @@ Most frequently asked questions.
 
 2. **What open source license are you using?**
 
-   We are using the Apache License Version 2.0, see it here: https://github.com/dotcloud/docker/blob/master/LICENSE
+   We are using the Apache License Version 2.0, see it here: https://github.com/MatApple/docker/blob/master/LICENSE
 
 3. **Does Docker run on Mac OS X or Windows?**
 
@@ -37,9 +37,9 @@ Most frequently asked questions.
 
     .. _Windows: ../documentation/installation/windows.html
     .. _MacOSX: ../documentation/installation/macos.html
-    .. _the repo: http://www.github.com/dotcloud/docker
+    .. _the repo: http://www.github.com/MatApple/docker
     .. _IRC\: docker on freenode: irc://chat.freenode.net#docker
-    .. _Github: http://www.github.com/dotcloud/docker
+    .. _Github: http://www.github.com/MatApple/docker
     .. _Ask questions on Stackoverflow: http://stackoverflow.com/search?q=docker
     .. _Join the conversation on Twitter: http://twitter.com/getdocker
 
