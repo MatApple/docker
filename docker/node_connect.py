@@ -24,6 +24,7 @@ def talk(msg,host,port):
 		sys.exit(2)
 	sock.send(msg)
 	data = sock.recv(1024)
+	print data
 	while data:
 		if data and len(data) > 0: 
 			print data
@@ -37,8 +38,8 @@ def talk(msg,host,port):
 
 
 if __name__=="__main__":
-	HOST = "ec2-23-22-117-177.compute-1.amazonaws.com"
-	PORT = 4243
+	HOST = "ec2-23-20-122-37.compute-1.amazonaws.com"
+	PORT = 4242
 	while 1:
 		msg = ''
 		try:

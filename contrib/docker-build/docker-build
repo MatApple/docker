@@ -2,7 +2,7 @@
 
 # docker-build is a script to build docker images from source.
 # It will be deprecated once the 'build' feature is incorporated into docker itself.
-# (See https://github.com/dotcloud/docker/issues/278)
+# (See https://github.com/MatApple/docker/issues/278)
 #
 # Author: Solomon Hykes <solomon@dotcloud.com>
 
