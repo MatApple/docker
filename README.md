@@ -33,91 +33,46 @@ Notable features
 
 * Interactive shell: docker can allocate a pseudo-tty and attach to the standard input of any container, for example to run a throwaway interactive shell.
 
-
-
-Under the hood
---------------
-
-Under the hood, Docker is built on the following components:
-
-
-* The [cgroup](http://blog.dotcloud.com/kernel-secrets-from-the-paas-garage-part-24-c) and [namespacing](http://blog.dotcloud.com/under-the-hood-linux-kernels-on-dotcloud-part) capabilities of the Linux kernel;
-
-* [AUFS](http://aufs.sourceforge.net/aufs.html), a powerful union filesystem with copy-on-write capabilities;
-
-* The [Go](http://golang.org) programming language;
-
-* [lxc](http://lxc.sourceforge.net/), a set of convenience scripts to simplify the creation of linux containers.
-
-
 Install instructions
 ==================
 
-Building from source
---------------------
-
-1. Make sure you have a [Go language](http://golang.org) compiler.
-
-    On a Debian/wheezy or Ubuntu 12.10 install the package:
-
-    ```bash
-
-    $ sudo apt-get install golang-go
-    ```
-
-2. Execute ``make``
-
-   This command will install all necessary dependencies and build the
-   executable that you can find in ``bin/docker``
-
-3. Should you like to see what's happening, run ``make`` with ``VERBOSE=1`` parameter:
-
-    ```bash
-
-    $ make VERBOSE=1
-    ```
-
-Installing on Ubuntu 12.04 and 12.10
-------------------------------------
-
-1. Install dependencies:
-
-    ```bash
-    sudo apt-get install lxc bsdtar
-    sudo apt-get install linux-image-extra-`uname -r`
-    ```
-
-    The `linux-image-extra` package is needed on standard Ubuntu EC2 AMIs in order to install the aufs kernel module.
-
-2. Install the latest docker binary:
-
-    ```bash
-    wget http://get.docker.io/builds/$(uname -s)/$(uname -m)/docker-master.tgz
-    tar -xf docker-master.tgz
-    ```
-
-3. Run your first container!
-
-    ```bash
-    cd docker-master
-    sudo ./docker pull base
-    sudo ./docker run -i -t base /bin/bash
-    ```
-
-    Consider adding docker to your `PATH` for simplicity.
-
-Installing on other Linux distributions
+Quick install on Ubuntu 12.04 and 12.10
 ---------------------------------------
 
-Right now, the officially supported distributions are:
+```bash
+curl get.docker.io | sh -x
+```
 
-* Ubuntu 12.04 (precise LTS)
-* Ubuntu 12.10 (quantal)
+Binary installs
+----------------
 
-Docker probably works on other distributions featuring a recent kernel, the AUFS patch, and up-to-date lxc. However this has not been tested.
+Docker supports the following binary installation methods.
+Note that some methods are community contributions and not yet officially supported.
 
-Some streamlined (but possibly outdated) installation paths' are available from the website: http://docker.io/documentation/ 
+* [Ubuntu 12.04 and 12.10 (officially supported)](http://docs.docker.io/en/latest/installation/ubuntulinux/)
+* [Arch Linux](http://docs.docker.io/en/latest/installation/archlinux/)
+* [MacOS X (with Vagrant)](http://docs.docker.io/en/latest/installation/macos/)
+* [Windows (with Vagrant)](http://docs.docker.io/en/latest/installation/windows/)
+* [Amazon EC2 (with Vagrant)](http://docs.docker.io/en/latest/installation/amazon/)
 
+Installing from source
+----------------------
+
+1. Make sure you have a [Go language](http://golang.org/doc/install) compiler and [git](http://git-scm.com) installed.
+
+2. Checkout the source code
+
+   ```bash
+   git clone http://github.com/dotcloud/docker
+   ```
+
+3. Build the docker binary
+
+   ```bash
+   cd docker
+   make VERBOSE=1
+   sudo cp ./bin/docker /usr/local/bin/docker
+   ```
 
 Usage examples
 ==============
@@ -170,7 +125,7 @@ Running an irc bouncer
 
 ```bash
 BOUNCER_ID=$(docker run -d -p 6667 -u irc shykes/znc $USER $PASSWORD)
-echo "Configure your irc client to connect to port $(port $BOUNCER_ID 6667) of this machine"
+echo "Configure your irc client to connect to port $(docker port $BOUNCER_ID 6667) of this machine"
 ```
 
 Running Redis
@@ -178,7 +133,7 @@ Running Redis
 
 ```bash
 REDIS_ID=$(docker run -d -p 6379 shykes/redis redis-server)
-echo "Configure your redis client to connect to port $(port $REDIS_ID 6379) of this machine"
+echo "Configure your redis client to connect to port $(docker port $REDIS_ID 6379) of this machine"
 ```
 
 Share your own image!
@@ -190,6 +145,7 @@ docker commit -m "Installed curl" $CONTAINER $USER/betterbase
 docker push $USER/betterbase
 ```
 
+A list of publicly available images is [available here](https://github.com/dotcloud/docker/wiki/Public-docker-images).
 
 Expose a service on a TCP port
 ------------------------------
@@ -207,6 +163,22 @@ echo hello world | nc $(hostname) $PORT
 # Verify that the network connection worked
 echo "Daemon received: $(docker logs $JOB)"
 ```
+
+Under the hood
+--------------
+
+Under the hood, Docker is built on the following components:
+
+
+* The [cgroup](http://blog.dotcloud.com/kernel-secrets-from-the-paas-garage-part-24-c) and [namespacing](http://blog.dotcloud.com/under-the-hood-linux-kernels-on-dotcloud-part) capabilities of the Linux kernel;
+
+* [AUFS](http://aufs.sourceforge.net/aufs.html), a powerful union filesystem with copy-on-write capabilities;
+
+* The [Go](http://golang.org) programming language;
+
+* [lxc](http://lxc.sourceforge.net/), a set of convenience scripts to simplify the creation of linux containers.
+
+
 
 Contributing to Docker
 ======================

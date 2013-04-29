@@ -1,9 +1,11 @@
 package docker
 
 import (
-	"github.com/MatApple/docker/rcli"
+	"fmt"
+	"github.com/dotcloud/docker/rcli"
 	"io"
 	"io/ioutil"
+	"net"
 	"os"
 	"os/exec"
 	"os/user"
@@ -46,8 +48,6 @@ func layerArchive(tarfile string) (io.Reader, error) {
 }
 
 func init() {
-	NO_MEMORY_LIMIT = os.Getenv("NO_MEMORY_LIMIT") == "1"
-
 	// Hack to run sys init during unit testing
 	if SelfPath() == "/sbin/init" {
 		SysInit()
@@ -60,8 +60,10 @@ func init() {
 		panic("docker tests needs to be run as root")
 	}
 
+	NetworkBridgeIface = "testdockbr0"
+
 	// Make it our Store root
-	runtime, err := NewRuntimeFromDirectory(unitTestStoreBase)
+	runtime, err := NewRuntimeFromDirectory(unitTestStoreBase, false)
 	if err != nil {
 		panic(err)
 	}
@@ -87,7 +89,7 @@ func newTestRuntime() (*Runtime, error) {
 		return nil, err
 	}
 
-	runtime, err := NewRuntimeFromDirectory(root)
+	runtime, err := NewRuntimeFromDirectory(root, false)
 	if err != nil {
 		return nil, err
 	}
@@ -254,6 +256,57 @@ func TestGet(t *testing.T) {
 
 }
 
+// Run a container with a TCP port allocated, and test that it can receive connections on localhost
+func TestAllocatePortLocalhost(t *testing.T) {
+	runtime, err := newTestRuntime()
+	if err != nil {
+		t.Fatal(err)
+	}
+	container, err := runtime.Create(&Config{
+		Image:     GetTestImage(runtime).Id,
+		Cmd:       []string{"sh", "-c", "echo well hello there | nc -l -p 5555"},
+		PortSpecs: []string{"5555"},
+	},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := container.Start(); err != nil {
+		t.Fatal(err)
+	}
+	defer container.Kill()
+
+	setTimeout(t, "Waiting for the container to be started timed out", 2*time.Second, func() {
+		for {
+			if container.State.Running {
+				break
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+	})
+
+	conn, err := net.Dial("tcp",
+		fmt.Sprintf(
+			"localhost:%s", container.NetworkSettings.PortMapping["5555"],
+		),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	output, err := ioutil.ReadAll(conn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(output) != "well hello there\n" {
+		t.Fatalf("Received wrong output from network connection: should be '%s', not '%s'",
+			"well hello there\n",
+			string(output),
+		)
+	}
+	container.Wait()
+}
+
 func TestRestore(t *testing.T) {
 
 	root, err := ioutil.TempDir("", "docker-test")
@@ -267,7 +320,7 @@ func TestRestore(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	runtime1, err := NewRuntimeFromDirectory(root)
+	runtime1, err := NewRuntimeFromDirectory(root, false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -326,7 +379,7 @@ func TestRestore(t *testing.T) {
 
 	// Here are are simulating a docker restart - that is, reloading all containers
 	// from scratch
-	runtime2, err := NewRuntimeFromDirectory(root)
+	runtime2, err := NewRuntimeFromDirectory(root, false)
 	if err != nil {
 		t.Fatal(err)
 	}
