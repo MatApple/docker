@@ -10,48 +10,40 @@ import os
 import sys
 import socket
 
-HOST= "ec2-23-22-117-177.compute-1.amazonaws.com"
-PORT= 4243
 
-def talk(msg):
+def talk(msg,host,port):
 	try:
-		try:
-			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		except socket.error, msg:
-			sys.stderr.write("[ERROR] %s\n" % msg[1])
-			sys.exit(1)
-		
-		try:
-			sock.connect((HOST, PORT))
-		except socket.error, msg:
-			sys.stderr.write("[ERROR] %s\n" % msg[1])
-			sys.exit(2)
-		
-		sock.send(msg)
-		
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	except socket.error, msg:
+		sys.stderr.write("[ERROR] %s\n" % msg[1])
+		sys.exit(1)
+	try:
+		sock.connect((host, port))
+	except socket.error, msg:
+		sys.stderr.write("[ERROR] %s\n" % msg[1])
+		sys.exit(2)
+	sock.send(msg)
+	data = sock.recv(1024)
+	while data:
+		if data and len(data) > 0: 
+			print data
 		data = sock.recv(1024)
-		
-		while data:
-			if data and len(data) > 0: 
-				print data
-			data = sock.recv(1024)
-			if not data or "closed connection" in data:
-				break
-		
-		sock.close()
-		print "socket closed"
-	except KeyboardInterrupt:
-		pass
+		if not data or "closed connection" in data:
+			break
+	sock.close()
+	print "socket closed"
  	return
 
 
 
 if __name__=="__main__":
+	HOST = "ec2-23-22-117-177.compute-1.amazonaws.com"
+	PORT = 4243
 	while 1:
 		msg = ''
 		try:
 			msg = raw_input('> ')
-			talk(msg)
+			talk(msg,HOST,PORT)
 		except:
 			raise
 	

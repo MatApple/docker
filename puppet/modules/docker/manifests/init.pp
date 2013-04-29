@@ -33,7 +33,6 @@ class docker {
 
     package { ["lxc", "debootstrap", "wget", "bsdtar", "git",
                "linux-image-3.5.0-25-generic",
-               "linux-image-extra-3.5.0-25-generic",
                "linux-headers-3.5.0-25-generic"]: }
 
     $ec2_version = file("/etc/ec2_version", "/dev/null")

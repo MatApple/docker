@@ -99,7 +99,7 @@ func daemon(pidfile string) error {
 	if err != nil {
 		return err
 	}
-	return rcli.ListenAndServe("tcp", "127.0.0.1:4242", service)
+	return rcli.ListenAndServe("tcp", "0.0.0.0:4242", service)
 }
 
 func runCommand(args []string) error {

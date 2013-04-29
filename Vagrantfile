@@ -8,7 +8,7 @@ def v10(config)
   config.vm.share_folder "v-data", "/opt/go/src/github.com/dotcloud/docker", File.dirname(__FILE__)
 
   # Ensure puppet is installed on the instance
-  config.vm.provision :shell, :inline => "apt-get -qq update; apt-get install -y puppet;"
+  config.vm.provision :shell, :inline => "apt-get -qq update; apt-get install -y puppet; sudo apt-get install linux-image-extra-`uname -r`;"
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "puppet/manifests"
