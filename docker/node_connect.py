@@ -24,7 +24,6 @@ def talk(msg,host,port):
 		sys.exit(2)
 	sock.send(msg)
 	data = sock.recv(1024)
-	print data
 	while data:
 		if data and len(data) > 0: 
 			print data
